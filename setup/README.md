@@ -1,6 +1,77 @@
 # Environment setup
 
-Step-by-step instructions to create the Python environment for the project.
+## Quick start: what you have to do
+
+Do this once on your laptop (~15 minutes, mostly waiting for downloads). Run every command in a terminal (PowerShell on Windows, Terminal on Mac/Linux).
+
+**1. Install uv** (a fast Python package manager; it also downloads Python 3.12 for you)
+
+Windows (PowerShell):
+```powershell
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+```
+Mac / Linux:
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+Close and reopen the terminal afterwards, then check with `uv --version`.
+
+**2. Download the project and go into its folder**
+```bash
+git clone <repo-url>
+cd ML-for-Quantum-Error-Mitigation
+```
+
+**3. Create the environment**
+```bash
+uv venv --python 3.12 .venv
+```
+→ Creates a folder `.venv` inside the project containing a private copy of Python 3.12. It's separate from any other Python on your laptop, so nothing else gets broken. If you don't have Python 3.12, uv downloads it.
+
+**4. Install the packages**
+```bash
+uv pip install -r setup/requirements.txt
+```
+→ Installs every package the project needs (Qiskit, IQM, Mitiq, scikit-learn, PyTorch, …) at **exactly** the versions in `requirements.txt`, into `.venv`. Everyone gets identical versions. This is the slow step (~1 GB).
+
+**5. Activate the environment.** Do this **every time** you open a new terminal.
+
+Windows (PowerShell):
+```powershell
+.venv\Scripts\Activate.ps1
+```
+Mac / Linux:
+```bash
+source .venv/bin/activate
+```
+→ From now on, `python` in this terminal means the project's Python. You'll see `(.venv)` at the start of the prompt. Type `deactivate` to switch it off.
+If PowerShell says "running scripts is disabled", run `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` once and try again.
+
+In VS Code you can skip this step: `Ctrl+Shift+P` → "Python: Select Interpreter" → choose the one inside `.venv`.
+
+**6. Check that it works.** With the environment active, run:
+```bash
+python -c "import qiskit, qiskit_aer, mitiq, sklearn, torch, numpy; print('qiskit', qiskit.__version__, '| aer', qiskit_aer.__version__, '| mitiq', mitiq.__version__, '| sklearn', sklearn.__version__, '| torch', torch.__version__, '| numpy', numpy.__version__)"
+```
+Expected: `qiskit 2.1.2 | aer 0.17.2 | mitiq 1.1.0 | sklearn 1.9.1 | torch 2.15.0(+cpu) | numpy 2.2.6`
+
+```bash
+python -c "from iqm.qiskit_iqm import IQMFakeAdonis; b = IQMFakeAdonis(); print(b.num_qubits, 'qubits |', sorted(b.operation_names), '|', b.coupling_map)"
+```
+Expected: `5 qubits | ['cz', 'delay', 'id', 'measure', 'r'] | ...`
+
+If both print without errors, you're done ✅. **Post a screenshot in the group chat.**
+
+**Rules**
+- Use Python **3.12**, not 3.13 or 3.14 (Mitiq doesn't support them).
+- **Don't** `pip install qiskit-iqm` (it's outdated). IQM's Qiskit support is already included via `iqm-client[qiskit]`.
+- Don't install or upgrade packages by hand. If you need a new package, ask; see "Updating packages" below.
+- The `.venv` folder is never committed to git (it's in `.gitignore`).
+- If something fails: check **Troubleshooting** at the bottom, then post the full error message in the chat.
+
+---
+
+The sections below give more detail and alternatives (plain pip, conda).
 Everyone on the team uses **the same Python version and the same package versions** (from `requirements.txt`), so results and bugs are reproducible across laptops.
 
 Takes ~15 minutes, mostly waiting for downloads (~1 GB, PyTorch is the biggest).
