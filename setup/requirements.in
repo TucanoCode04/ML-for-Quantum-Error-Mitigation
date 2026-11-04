@@ -1,0 +1,22 @@
+# Top-level dependencies for the ML-QEM project.
+# Edit THIS file, then regenerate requirements.txt (see setup/README.md, "Updating packages").
+
+# Quantum
+iqm-client[qiskit]     # IQM's Qiskit adapter (replaces the old, unmaintained "qiskit-iqm" package)
+qiskit-aer             # noisy / noiseless simulation
+mitiq                  # zero-noise extrapolation (ZNE)
+ply                    # needed by Mitiq's Qiskit conversion
+
+# Machine learning
+scikit-learn           # linear regression, random forest
+torch                  # MLP (CPU build is enough)
+
+# Data, plots, notebooks, tests
+pandas
+pyarrow
+matplotlib
+pyyaml
+tqdm
+jupyterlab
+ipykernel
+pytest
