@@ -10,3 +10,4 @@ __pycache__/
 
 # Secrets (Lagrange tokens etc.) — never commit
 .env
+tokens.json

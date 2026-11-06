@@ -2,7 +2,7 @@
 # Edit THIS file, then regenerate requirements.txt (see setup/README.md, "Updating packages").
 
 # Quantum
-iqm-client[qiskit]     # IQM's Qiskit adapter (replaces the old, unmaintained "qiskit-iqm" package)
+iqm-client[qiskit]==33.0.4   # same version the Lagrange lab uses (their Example.ipynb, March 2026)
 qiskit-aer             # noisy / noiseless simulation
 mitiq                  # zero-noise extrapolation (ZNE)
 ply                    # needed by Mitiq's Qiskit conversion
@@ -15,6 +15,7 @@ torch                  # MLP (CPU build is enough)
 pandas
 pyarrow
 matplotlib
+pylatexenc             # needed to draw circuits with circuit.draw("mpl")
 pyyaml
 tqdm
 jupyterlab

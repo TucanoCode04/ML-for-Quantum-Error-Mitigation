@@ -65,6 +65,12 @@ debugpy==1.8.22
     # via ipykernel
 defusedxml==0.7.1
     # via nbconvert
+deprecated==3.0.1
+    # via
+    #   opentelemetry-api
+    #   opentelemetry-exporter-otlp-proto-grpc
+    #   opentelemetry-exporter-otlp-proto-http
+    #   opentelemetry-semantic-conventions
 dill==0.4.1
     # via qiskit
 duet==0.2.9
@@ -81,7 +87,7 @@ fqdn==1.6.0
     # via jsonschema
 fsspec==2026.9.0
     # via torch
-googleapis-common-protos==1.76.0
+googleapis-common-protos==1.75.0
     # via
     #   opentelemetry-exporter-otlp-proto-grpc
     #   opentelemetry-exporter-otlp-proto-http
@@ -101,6 +107,8 @@ idna==3.20
     #   httpx
     #   jsonschema
     #   requests
+importlib-metadata==8.4.0
+    # via opentelemetry-api
 iniconfig==2.3.1
     # via pytest
 ipykernel==7.4.0
@@ -108,36 +116,22 @@ ipykernel==7.4.0
     #   -r setup/requirements.in
     #   jupyterlab
 ipython==9.18.1
-    # via
-    #   ipykernel
-    #   iqm-pulla
+    # via ipykernel
 ipython-pygments-lexers==1.1.1
     # via ipython
-iqm-client==36.0.0
+iqm-client==33.0.4
     # via -r setup/requirements.in
-iqm-data-definitions==3.1.0
+iqm-data-definitions==2.22
     # via
     #   iqm-exa-common
-    #   iqm-pulla
     #   iqm-pulse
     #   iqm-station-control-client
-iqm-exa-common==29.0.0
-    # via
-    #   iqm-client
-    #   iqm-pulla
-    #   iqm-pulse
-    #   iqm-station-control-client
-iqm-pulla==15.0.0
+iqm-exa-common==27.5.4
+    # via iqm-station-control-client
+iqm-pulse==12.7.5
     # via iqm-client
-iqm-pulse==15.0.0
-    # via
-    #   iqm-client
-    #   iqm-pulla
-    #   iqm-station-control-client
-iqm-station-control-client==14.0.0
-    # via
-    #   iqm-client
-    #   iqm-pulla
+iqm-station-control-client==12.0.5
+    # via iqm-client
 isoduration==20.11.0
     # via jsonschema
 jedi==0.20.1
@@ -303,44 +297,36 @@ nvidia-nvshmem-cu13==3.7.2 ; sys_platform == 'linux'
     # via torch
 nvidia-nvtx==13.2.86 ; (platform_machine == 'aarch64' and sys_platform == 'linux') or (platform_machine == 'x86_64' and sys_platform == 'linux')
     # via cuda-toolkit
-opentelemetry-api==1.45.2
+opentelemetry-api==1.27.0
     # via
-    #   opentelemetry-exporter-http-transport
     #   opentelemetry-exporter-otlp-proto-grpc
     #   opentelemetry-exporter-otlp-proto-http
     #   opentelemetry-sdk
     #   opentelemetry-semantic-conventions
-opentelemetry-exporter-http-transport==0.66b2
-    # via opentelemetry-exporter-otlp-proto-http
-opentelemetry-exporter-otlp==1.45.2
+opentelemetry-exporter-otlp==1.27.0
     # via iqm-station-control-client
-opentelemetry-exporter-otlp-common==0.66b2
+opentelemetry-exporter-otlp-proto-common==1.27.0
     # via
     #   opentelemetry-exporter-otlp-proto-grpc
     #   opentelemetry-exporter-otlp-proto-http
-opentelemetry-exporter-otlp-proto-common==1.45.2
-    # via
-    #   opentelemetry-exporter-otlp-proto-grpc
-    #   opentelemetry-exporter-otlp-proto-http
-opentelemetry-exporter-otlp-proto-grpc==1.45.2
+opentelemetry-exporter-otlp-proto-grpc==1.27.0
     # via opentelemetry-exporter-otlp
-opentelemetry-exporter-otlp-proto-http==1.45.2
+opentelemetry-exporter-otlp-proto-http==1.27.0
     # via opentelemetry-exporter-otlp
-opentelemetry-proto==1.45.2
+opentelemetry-proto==1.27.0
     # via
     #   opentelemetry-exporter-otlp-proto-common
     #   opentelemetry-exporter-otlp-proto-grpc
     #   opentelemetry-exporter-otlp-proto-http
-opentelemetry-sdk==1.45.2
+opentelemetry-sdk==1.27.0
     # via
-    #   opentelemetry-exporter-otlp-common
     #   opentelemetry-exporter-otlp-proto-grpc
     #   opentelemetry-exporter-otlp-proto-http
-opentelemetry-semantic-conventions==0.66b2
+opentelemetry-semantic-conventions==0.48b0
     # via opentelemetry-sdk
 optype==0.19.0
     # via scipy-stubs
-packaging==24.2
+packaging==24.1
     # via
     #   ipykernel
     #   iqm-client
@@ -375,10 +361,11 @@ prometheus-client==0.26.0
     # via jupyter-server
 prompt-toolkit==3.0.53
     # via ipython
-protobuf==7.36.2
+protobuf==4.25.9
     # via
     #   googleapis-common-protos
     #   iqm-data-definitions
+    #   iqm-station-control-client
     #   opentelemetry-proto
 psutil==7.2.2
     # via
@@ -408,7 +395,7 @@ pygments==2.21.0
     #   nbconvert
     #   pytest
 pylatexenc==2.11
-    # via iqm-pulla
+    # via -r setup/requirements.in
 pyparsing==3.3.3
     # via matplotlib
 pytest==9.2.0
@@ -424,7 +411,7 @@ python-dotenv==1.2.4
     # via iqm-exa-common
 python-json-logger==4.2.0
     # via jupyter-events
-python-rapidjson==1.26
+python-rapidjson==1.20
     # via iqm-pulse
 pytz==2026.6
     # via pandas
@@ -456,13 +443,12 @@ referencing==0.37.0
     #   jsonschema
     #   jsonschema-specifications
     #   jupyter-events
-requests==2.34.2
+requests==2.32.3
     # via
     #   iqm-client
     #   iqm-exa-common
     #   iqm-station-control-client
     #   jupyterlab-server
-    #   opentelemetry-exporter-http-transport
     #   opentelemetry-exporter-otlp-proto-http
 rfc3339-validator==0.1.4
     # via
@@ -488,7 +474,6 @@ scipy==1.17.1
     # via
     #   cirq-core
     #   iqm-data-definitions
-    #   iqm-pulla
     #   iqm-pulse
     #   mitiq
     #   qiskit
@@ -497,7 +482,6 @@ scipy==1.17.1
 scipy-stubs==1.18.1.1
     # via
     #   iqm-data-definitions
-    #   iqm-pulla
     #   iqm-pulse
 send2trash==2.1.0
     # via jupyter-server
@@ -577,14 +561,8 @@ typing-extensions==4.16.0
     #   beautifulsoup4
     #   cirq-core
     #   grpcio
-    #   iqm-exa-common
-    #   iqm-pulse
     #   jupyter-client
-    #   opentelemetry-api
-    #   opentelemetry-exporter-otlp-proto-grpc
-    #   opentelemetry-exporter-otlp-proto-http
     #   opentelemetry-sdk
-    #   opentelemetry-semantic-conventions
     #   optype
     #   pydantic
     #   pydantic-core
@@ -615,7 +593,9 @@ webencodings==0.6.1
     #   tinycss2
 websocket-client==1.9.2
     # via jupyter-server
-xarray==2026.9.0
-    # via
-    #   iqm-exa-common
-    #   iqm-pulla
+wrapt==2.5.2
+    # via deprecated
+xarray==2024.10.0
+    # via iqm-exa-common
+zipp==4.1.2
+    # via importlib-metadata
