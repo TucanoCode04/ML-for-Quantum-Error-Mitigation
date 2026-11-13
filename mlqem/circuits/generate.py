@@ -43,19 +43,9 @@ BE CAREFUL WITH
 # - depths 1 to 5 are tried one after another (1, 2, 3, 4, 5, 1, 2, ...)
 # - a circuit is identified by (n_qubits, depth, seed)
 
-from qiskit import transpile
 from qiskit.circuit.random import random_circuit
 import math
-
-TRANSPILER_SEED = 0 
-
-# TEMPORARY: placeholder until compile.py is ready.
-# Same settings must be used by everyone: optimization_level=1, seed_transpiler=0.
-def compile_circuit(circuit, backend, seed):
-    measured=circuit.copy()
-    measured.measure_all()
-    return transpile(measured, backend=backend,
-                     optimization_level=1, seed_transpiler= seed)
+from mlqem.circuits.compile import compile_for_backend, TRANSPILER_SEED
 
 
 def make_random_circuit(n_qubits, depth, seed):
@@ -109,7 +99,7 @@ def build_dataset(backend, n_qubits=4, groups=(2, 4, 6, 8, 10, 12),
     while tries < max_tries and not control:                     
         depth = depth_list[tries % len(depth_list)]
         qc=make_random_circuit(n_qubits,depth,seed)
-        compiled_qc=compile_circuit(qc,backend,TRANSPILER_SEED)
+        compiled_qc=compile_for_backend(qc,backend,TRANSPILER_SEED)
         num_cz=count_cz(compiled_qc)
         group=assign_group(num_cz, groups)
 

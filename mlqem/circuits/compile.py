@@ -28,3 +28,30 @@ LATER (keep the door open, don't do it now)
       circuit would take forever), and save the raw counts, the date and the calibration data of the
       day together with the results. If the error says "Slot reserved to another project", wait and retry.
 """
+
+
+# Imports
+from qiskit import QuantumCircuit, transpile
+from qiskit.providers import BackendV2
+
+# CONSTANTS, used for all programs
+TRANSPILER_SEED = 10
+OPT_LEVEL = 2
+
+def check_native_gates(compiled, backend: BackendV2, basis=None):
+    base_gates = basis if basis is not None else backend.target.operation_names
+    allowed_gates = set(base_gates) | {"measure", "barrier"}
+    gates_used = set(compiled.count_ops().keys())
+
+    # Sanity check forn non-allowed gates
+    non_allowed = gates_used-allowed_gates
+    if non_allowed:
+        raise ValueError(f"Non-allowed gates in circuit. Gates: {non_allowed}")
+
+def compile_for_backend(circuit: QuantumCircuit, backend: BackendV2, seed=TRANSPILER_SEED, opt_level=OPT_LEVEL, basis=None):
+    measured = circuit.measure_all(inplace=False) # Measured copy
+    compiled = transpile(circuits=measured, backend=backend, basis_gates=basis, seed_transpiler=seed, optimization_level=opt_level)
+
+    check_native_gates(compiled, backend, basis)
+
+    return compiled
