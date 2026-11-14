@@ -40,7 +40,7 @@ BE CAREFUL WITH
 # Grouping rule:
 # - group g = circuits with g-1 or g CZs after compiling, 0 CZs are discarded
 # - default groups: 2, 4, 6, 8, 10, 12
-# - depths 1 to 5 are tried one after another (1, 2, 3, 4, 5, 1, 2, ...)
+# - depths 1 to 6 are tried one after another (1, 2, 3, 4, 5, 6, 1, 2, ...)
 # - a circuit is identified by (n_qubits, depth, seed)
 
 from qiskit.circuit.random import random_circuit
@@ -61,8 +61,7 @@ def make_random_circuit(n_qubits, depth, seed):
 
 
 def count_cz(compiled_c):
-    """Number of CZ gates. Use it on the compiled circuit:
-    the original circuit has no CZ gates."""
+    """Number of CZ gates. Use it on the compiled circuit."""
     num_cz=compiled_c.count_ops().get("cz",0)
     return num_cz
 
@@ -81,7 +80,7 @@ def assign_group(num_cz, groups=(2, 4, 6, 8, 10, 12)):
 
 
 def build_dataset(backend, n_qubits=4, groups=(2, 4, 6, 8, 10, 12),
-                  n_per_group=200, depths=range(1, 6),
+                  n_per_group=200, depths=range(1, 7),
                   max_tries=10000, start_seed=0):
     """Generate random circuits until every group has n_per_group circuits.
     Same arguments always give the same dataset.
@@ -121,4 +120,4 @@ def build_dataset(backend, n_qubits=4, groups=(2, 4, 6, 8, 10, 12),
 
     if not control:
         print("Some groups did not fill up.", counts)
-    return result
+    return result 
