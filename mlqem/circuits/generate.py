@@ -67,11 +67,9 @@ def count_cz(compiled_c):
 
 
 def assign_group(num_cz, groups=(2, 4, 6, 8, 10, 12)):
-    """Group of a circuit from its number of CZs (after compiling).
-    Rule: group g = circuits with g-1 or g CZs. Returns None if the circuit
-    fits no group (0 CZs, or more CZs than the largest group): discard it.
+    """Group of a circuit from its number of CZs, using the grouping rule above.
+    Returns None if it fits no group (0 CZs or too many): discard it.
     Groups must be even numbers."""
-
     g=math.ceil(num_cz/2)*2
     if g in groups:
         return g
