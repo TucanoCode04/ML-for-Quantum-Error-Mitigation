@@ -36,3 +36,86 @@ BE CAREFUL WITH
     - For now compile with IQMFakeAdonis (from iqm.qiskit_iqm): same topology and gates as Lagrange,
       and it doesn't use the queue.
 """
+
+# Grouping rule:
+# - group g = circuits with g-1 or g CZs after compiling, 0 CZs are discarded
+# - default groups: 2, 4, 6, 8, 10, 12
+# - depths 1 to 6 are tried one after another (1, 2, 3, 4, 5, 6, 1, 2, ...)
+# - a circuit is identified by (n_qubits, depth, seed)
+
+from qiskit.circuit.random import random_circuit
+import math
+from mlqem.circuits.compile import compile_for_backend, TRANSPILER_SEED
+
+
+def make_random_circuit(n_qubits, depth, seed):
+    """Random circuit with no measurements and no 'id' gates.
+    Same (n_qubits, depth, seed) always gives the same circuit.
+    'id' gates are removed because the compiler can crash on them."""
+    qc= random_circuit(n_qubits, depth=depth,max_operands=2, seed=seed)
+    clean=qc.copy_empty_like()
+    for gate in qc.data:
+        if gate.operation.name!="id":
+            clean.append(gate)
+    return clean
+
+
+def count_cz(compiled_c):
+    """Number of CZ gates. Use it on the compiled circuit."""
+    num_cz=compiled_c.count_ops().get("cz",0)
+    return num_cz
+
+
+def assign_group(num_cz, groups=(2, 4, 6, 8, 10, 12)):
+    """Group of a circuit from its number of CZs, using the grouping rule above.
+    Returns None if it fits no group (0 CZs or too many): discard it.
+    Groups must be even numbers."""
+    g=math.ceil(num_cz/2)*2
+    if g in groups:
+        return g
+    else:
+        return None
+
+
+def build_dataset(backend, n_qubits=4, groups=(2, 4, 6, 8, 10, 12),
+                  n_per_group=200, depths=range(1, 7),
+                  max_tries=10000, start_seed=0):
+    """Generate random circuits until every group has n_per_group circuits.
+    Same arguments always give the same dataset.
+
+    Returns a list of dicts: seed, depth, n_qubits, circuit (original,
+    no measurements), compiled, n_cz, group."""
+
+    counts = {g: 0 for g in groups}
+    tries=0
+    control=False
+    depth_list = list(depths) 
+    seed=start_seed
+    result=[]
+
+    while tries < max_tries and not control:                     
+        depth = depth_list[tries % len(depth_list)]
+        qc=make_random_circuit(n_qubits,depth,seed)
+        compiled_qc=compile_for_backend(qc,backend,TRANSPILER_SEED)
+        num_cz=count_cz(compiled_qc)
+        group=assign_group(num_cz, groups)
+
+        if group is not None and counts[group]<n_per_group:
+            record={
+                "seed": seed,
+                "depth": depth,
+                "n_qubits": n_qubits,
+                "circuit": qc,      
+                "compiled": compiled_qc,      
+                "n_cz": num_cz,
+                "group": group,
+            }
+            result.append(record)
+            counts[group]+=1
+        seed+=1
+        tries+=1
+        control=all(counts[g] >= n_per_group for g in groups)   
+
+    if not control:
+        print("Some groups did not fill up.", counts)
+    return result 
