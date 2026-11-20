@@ -3,8 +3,6 @@
     python -m scripts.models_sanity_adonis              (from the repo root)
     python -m scripts.models_sanity_adonis --n 600      (faster)
 
-Replace lines 6–8 of the top comment (from "It builds a small dataset ITSELF" to "the real models-group pipeline.") with this:
-
 It builds a small dataset ITSELF with four temporary stand-ins for circuits/ and simulation/
 (those files are still empty): make_circuit, compile_for, exact_z and counts_to_z. When the
 other groups push their code, replace these four functions with theirs; everything from
