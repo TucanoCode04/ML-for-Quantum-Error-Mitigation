@@ -40,3 +40,36 @@ LATER: zne.py (baseline to beat)
     linearly to 0:  Z(0) = (3 Z(1) - Z(3)) / 2.  Mitiq can do it but can't read IQM's r gate,
     so either fold by hand or compile to rx/ry/rz + cz first.
 """
+import numpy as np
+
+
+def counts_to_z_expectations(counts: dict, n_qubits: int) -> np.ndarray:
+  total_shots = sum(counts.values())
+  z_expectations = np.zeros(n_qubits, dtype=float)
+
+  for bitstring, count in counts.items():
+    clean_bits = bitstring.replace(" ", "")
+    for i in range(n_qubits):
+      if clean_bits[-1 - i] == "0":
+        z_expectations[i] += count
+      else:
+        z_expectations[i] -= count
+
+  return z_expectations / total_shots
+
+
+def compute_noisy_z_expectations(
+    circuits, backend, shots: int = 4000, seed: int = 42
+) -> np.ndarray:
+  job = backend.run(circuits, shots=shots, seed_simulator=seed)
+  all_counts = job.result().get_counts()
+
+  if isinstance(all_counts, dict):
+    all_counts = [all_counts]
+    circuits = [circuits]
+
+  results = []
+  for qc, counts in zip(circuits, all_counts):
+    results.append(counts_to_z_expectations(counts, qc.num_clbits))
+
+  return np.array(results, dtype=float)
