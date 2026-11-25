@@ -61,15 +61,14 @@ def counts_to_z_expectations(counts: dict, n_qubits: int) -> np.ndarray:
 def compute_noisy_z_expectations(
     circuits, backend, shots: int = 4000, seed: int = 42
 ) -> np.ndarray:
-  job = backend.run(circuits, shots=shots, seed_simulator=seed)
-  all_counts = job.result().get_counts()
-
-  if isinstance(all_counts, dict):
-    all_counts = [all_counts]
+  # a single circuit is treated as a list of one, so the rest works the same in both cases
+  if not isinstance(circuits, (list, tuple)):
     circuits = [circuits]
 
+  result = backend.run(circuits, shots=shots, seed_simulator=seed).result()
+
   results = []
-  for qc, counts in zip(circuits, all_counts):
-    results.append(counts_to_z_expectations(counts, qc.num_clbits))
+  for i, qc in enumerate(circuits):
+    results.append(counts_to_z_expectations(result.get_counts(i), qc.num_clbits))
 
   return np.array(results, dtype=float)
