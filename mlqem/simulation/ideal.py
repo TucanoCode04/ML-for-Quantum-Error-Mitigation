@@ -33,3 +33,64 @@ BE CAREFUL WITH
     - Easy checks to do yourselves: |0000> gives [1,1,1,1]; X on qubit 1 gives [1,-1,1,1];
       a 4-qubit GHZ state gives [0,0,0,0].
 """
+import numpy as np
+from qiskit import QuantumCircuit
+from qiskit.quantum_info import Statevector
+
+
+def compute_exact_z_expectations(circuit: QuantumCircuit) -> np.ndarray:
+  """
+    Compute the exact expectation values <Z_i> for each qubit of an ideal
+    (noiseless) quantum circuit without measurements.
+
+    Args:
+        circuit: Original QuantumCircuit (without measurement operations).
+
+    Returns:
+        np.ndarray: 1D float array of length n_qubits with values in [-1, 1].
+    """
+  # 1. Remove any final measurements for safety and compute the exact Statevector
+  clean_circuit = circuit.remove_final_measurements(inplace=False)
+  sv = Statevector(clean_circuit)
+
+  # 2. Extract the array of 2^n state probabilities
+  probs = sv.probabilities()
+  n_qubits = clean_circuit.num_qubits
+  n_states = len(probs)  # equal to 2**n_qubits
+
+  z_expectations = np.zeros(n_qubits, dtype=float)
+
+  # 3. Compute <Z_i> = P(qubit i is 0) - P(qubit i is 1) for each qubit i
+  for i in range(n_qubits):
+    exp_val = 0.0
+    for k in range(n_states):
+      # Check the i-th bit of basis state index k 
+      bit_i = (k >> i) & 1
+
+      if bit_i == 0:
+        exp_val += probs[k]
+      else:
+        exp_val -= probs[k]
+
+    z_expectations[i] = exp_val
+
+  return z_expectations
+
+
+if __name__ == "__main__":
+  # Test 1: State |0000> -> expected [1., 1., 1., 1.]
+  qc1 = QuantumCircuit(4)
+  print("Test |0000>:", compute_exact_z_expectations(qc1))
+
+  # Test 2: Bring X on qubit 1 -> expected [1., -1., 1., 1.]
+  qc2 = QuantumCircuit(4)
+  qc2.x(1)
+  print("Test X(1):  ", compute_exact_z_expectations(qc2))
+
+  # Test 3: State GHZ with 4 qubit -> expected [0., 0., 0., 0.]
+  qc3 = QuantumCircuit(4)
+  qc3.h(0)
+  qc3.cx(0, 1)
+  qc3.cx(1, 2)
+  qc3.cx(2, 3)
+  print("Test GHZ:   ", compute_exact_z_expectations(qc3))
