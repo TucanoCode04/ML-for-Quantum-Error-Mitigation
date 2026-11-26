@@ -50,7 +50,13 @@ def check_native_gates(compiled, backend: BackendV2, basis=None):
 
 def compile_for_backend(circuit: QuantumCircuit, backend: BackendV2, seed=TRANSPILER_SEED, opt_level=OPT_LEVEL, basis=None):
     measured = circuit.measure_all(inplace=False) # Measured copy
-    compiled = transpile(circuits=measured, backend=backend, basis_gates=basis, seed_transpiler=seed, optimization_level=opt_level)
+    if basis is None:
+        # target= (not backend=): the compiled circuit is written on the PHYSICAL qubits of the chip,
+        # so what you read is what runs, and it survives saving/loading with QPY.
+        # With backend= IQM keeps the original qubit labels and the mapping gets lost when saved.
+        compiled = transpile(circuits=measured, target=backend.target, seed_transpiler=seed, optimization_level=opt_level)
+    else:
+        compiled = transpile(circuits=measured, backend=backend, basis_gates=basis, seed_transpiler=seed, optimization_level=opt_level)
 
     check_native_gates(compiled, backend, basis)
 

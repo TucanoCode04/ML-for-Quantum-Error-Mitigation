@@ -8,6 +8,9 @@ __pycache__/
 .ipynb_checkpoints/
 .pytest_cache/
 
+# Personal dataset runs (data/sim_test is shared and stays in the repo)
+data/run_*/
+
 # Secrets (Lagrange tokens etc.) — never commit
 .env
 tokens.json
